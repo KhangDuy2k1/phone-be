@@ -1,0 +1,13 @@
+import express from 'express';
+import { ConfigController } from '../controllers/config';
+import { Endpoins } from '../constants/endpoins';
+import Joi from 'joi';
+import { Validator } from '../utils/validate';
+import { ConfigService } from '../services/config';
+const validator = new Validator();
+const configService = new ConfigService();
+const configController = new ConfigController(Joi, configService, validator);
+export const configRouter = express.Router();
+configRouter.post(Endpoins.addConfig, configController.addConfig);
+configRouter.delete(Endpoins.deleteConfig, configController.delConfig);
+configRouter.put(Endpoins.udpateConfig, configController.updateConfig);
