@@ -1,3 +1,4 @@
+import { Transaction } from 'sequelize';
 import { OrderModel } from '../models/order';
 import { OrderItemModel } from '../models/orderItem';
 import { IPhone, PhoneModel } from '../models/phone';
@@ -5,6 +6,10 @@ import { PhoneVariantModel } from '../models/phoneVariant';
 import { CustomError } from '../utils/error';
 
 export class OrderService {
+    private sequelize: any;
+    constructor(sequelize: any) {
+        this.sequelize = sequelize;
+    }
     private checkIdOrder = async (id: number): Promise<any> => {
         try {
             const isCheck = await OrderModel.findByPk(id);
@@ -20,11 +25,11 @@ export class OrderService {
         phone_order: string;
         address_order: string;
     }): Promise<any> => {
+        const transaction = await this.sequelize.transaction();
         try {
-            console.log(bodyOrder.id_orders);
             const response = await Promise.all(
-                bodyOrder.id_orders.map(async (id, index) => {
-                    return (async () => {
+                bodyOrder.id_orders.map((id, index) => {
+                    return (async (): Promise<any> => {
                         const orderItem = await OrderItemModel.findByPk(id, {
                             include: {
                                 model: PhoneVariantModel,
@@ -55,22 +60,26 @@ export class OrderService {
                             phone?.inventory_number
                                 ? (phone.inventory_number = result)
                                 : undefined;
-                            await phone?.save();
+                            await phone?.save({ transaction });
                             return orderItem?.toJSON();
                         }
                     })();
                 })
             );
-            // console.log(response);
-            const { dataValues } = await OrderModel.create({
-                user_id: bodyOrder.id_user,
-                order_adress: bodyOrder.address_order,
-                phone_adress: bodyOrder.phone_order,
-                total_amount: bodyOrder.total_amount,
-            });
+            const { dataValues } = await OrderModel.create(
+                {
+                    user_id: bodyOrder.id_user,
+                    order_adress: bodyOrder.address_order,
+                    phone_adress: bodyOrder.phone_order,
+                    total_amount: bodyOrder.total_amount,
+                },
+                {
+                    transaction,
+                }
+            );
             await Promise.all(
                 response.map((orderItem, index) => {
-                    return (async () => {
+                    return (async (): Promise<any> => {
                         await OrderItemModel.update(
                             {
                                 order_id: dataValues.id,
@@ -80,18 +89,20 @@ export class OrderService {
                                 where: {
                                     id: orderItem?.id,
                                 },
+                                transaction,
                             }
                         );
                     })();
                 })
             );
+            await transaction.commit();
             return {
                 success: true,
                 statusCode: 200,
                 message: 'đặt hàng thành công',
             };
         } catch (error) {
-            console.error(error);
+            await transaction.rollback();
             if (error instanceof CustomError) {
                 throw error;
             } else {
@@ -109,7 +120,7 @@ export class OrderService {
             if (!isCheck) {
                 throw new CustomError(404, 'không tìm thấy id');
             } else {
-                const respones = await OrderModel.update(
+                const order = await OrderModel.update(
                     {
                         phone_adress: bodyUpdate.phone_order,
                         order_adress: bodyUpdate.adress_order,
@@ -135,7 +146,12 @@ export class OrderService {
         }
     };
     cancleOrder = async (id: number): Promise<any> => {
+        let transaction = await this.sequelize.transaction();
         try {
+            const isCheck = await this.checkIdOrder(id);
+            if (!isCheck) {
+                throw new CustomError(404, 'không tìm thấy id để hủy');
+            }
             const response = await OrderModel.findByPk(id, {
                 include: {
                     model: OrderItemModel,
@@ -151,25 +167,84 @@ export class OrderService {
                     ],
                 },
             });
-            console.log(response?.toJSON());
             const createdAt = response?.toJSON().createdAt;
             let timeDif: number = createdAt
-                ? (Date.now() - new Date(createdAt).getTime()) / (3600 * 1000)
+                ? (Date.now() - new Date(createdAt).getTime()) / (1000 * 3600)
                 : 1;
             if (timeDif > 24) {
                 throw new CustomError(
                     400,
                     'không thể hủy đơn, do quá thời gian'
                 );
+            } else if (!response?.toJSON().orderItems.length) {
+                throw new CustomError(400, 'không cơ đơn hàng');
             } else {
-                // await Promise.all(
-                //     response?.toJSON().orderItems.map((orderItem, index) => {
-                //         return (async () => {
-                //             const id = orderItem.phone_variant.phone.id;
-                //         })();
-                //     })
-                // );
+                await Promise.all(
+                    response?.toJSON().orderItems.map((orderItem: any) => {
+                        return (async (): Promise<any> => {
+                            const newInventory_number: number =
+                                orderItem.quantity +
+                                orderItem.phone_variant.phone.inventory_number;
+
+                            const phoneUpdate = await PhoneModel.update(
+                                {
+                                    inventory_number: newInventory_number,
+                                },
+                                {
+                                    transaction,
+                                    where: {
+                                        id: orderItem.phone_variant.phone.id,
+                                    },
+                                }
+                            );
+                            if (!phoneUpdate[0]) {
+                                throw new CustomError(
+                                    500,
+                                    'không thể cộng lại hàng trong kho'
+                                );
+                            } else {
+                                await Promise.all([
+                                    await OrderItemModel.update(
+                                        {
+                                            order_id: null,
+                                        },
+                                        {
+                                            where: {
+                                                id: orderItem.id,
+                                            },
+                                            transaction,
+                                        }
+                                    ),
+                                    await OrderModel.update(
+                                        {
+                                            status: 'đã hủy đơn',
+                                        },
+                                        {
+                                            transaction,
+                                            where: {
+                                                id: response.id,
+                                            },
+                                        }
+                                    ),
+                                ]);
+                            }
+                        })();
+                    })
+                );
             }
-        } catch (error) {}
+            await transaction.commit();
+            return {
+                success: true,
+                statusCode: 200,
+                message: 'hủy đơn thành công',
+            };
+        } catch (error) {
+            await transaction.rollback();
+            if (error instanceof CustomError) {
+                throw error;
+            } else {
+                throw new CustomError(500, 'lỗi server');
+            }
+        }
     };
 }

@@ -22,6 +22,7 @@ import { orderItemRouter } from './routes/orderItem';
 import { cartRouter } from './routes/cart';
 import { slideRouter } from './routes/slide';
 import { orderRouter } from './routes/order';
+import { reviewRouter } from './routes/review';
 const passportConfig = new PassportConfig();
 const urlError = new UrlError();
 export class App {
@@ -55,6 +56,7 @@ export class App {
         this.app.use(express.json());
     };
     Api = () => {
+        this.app.use('/api/review', reviewRouter);
         this.app.use('/api/order', orderRouter);
         this.app.use('/api/slide', slideRouter);
         this.app.use('/api/cart', cartRouter);

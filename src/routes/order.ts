@@ -1,13 +1,15 @@
 import exrpess from 'express';
 import Joi from 'joi';
 import { OrderService } from '../services/order';
+import { ConnectDatabase } from '../configs/connectDatabase';
 import { OrderController } from '../controllers/order';
 import { AuthMiddleware } from '../middlewares/auth';
 import { Validator } from '../utils/validate';
 import { Endpoins } from '../constants/endpoins';
+const sequelize = new ConnectDatabase().getSequelize();
 const validator: Validator = new Validator();
 const authMiddleware: AuthMiddleware = new AuthMiddleware();
-const orderService: OrderService = new OrderService();
+const orderService: OrderService = new OrderService(sequelize);
 const orderController: OrderController = new OrderController(
     orderService,
     Joi,

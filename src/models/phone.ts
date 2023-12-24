@@ -13,6 +13,7 @@ import {
 // import { IPhone } from '../interfaces/phone';
 import { CategoryModel } from './category';
 // import { ConfigModel } from './config';
+import { ReviewModel } from './review';
 import { DiscountModel } from './discount';
 import { ConfigModel } from './config';
 import { ImageModel } from './image';
@@ -26,6 +27,7 @@ export interface IPhone extends IBaseModel {
     category_id: number;
     config_id: number;
     inventory_number: number;
+    star_number?: number;
     avatar: string;
     desc: string;
     price: number;
@@ -68,6 +70,12 @@ export class PhoneModel extends BaseModel<IPhone> {
     inventory_number!: number;
 
     @Column({
+        type: DataType.DECIMAL,
+        defaultValue: 0,
+    })
+    star_number!: number;
+
+    @Column({
         type: DataType.STRING,
     })
     avatar!: string;
@@ -94,4 +102,6 @@ export class PhoneModel extends BaseModel<IPhone> {
     storage!: StorageModel[];
     @HasMany(() => ImageModel)
     images!: ImageModel[];
+    @HasMany(() => ReviewModel)
+    reviews!: ReviewModel[];
 }

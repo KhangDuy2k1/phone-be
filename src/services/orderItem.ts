@@ -1,9 +1,15 @@
 import { CartModel } from '../models/cart';
+import { Op } from 'sequelize';
 import { OrderItemModel } from '../models/orderItem';
+import { PhoneModel } from '../models/phone';
 import { PhoneVariantModel } from '../models/phoneVariant';
 import { CustomError } from '../utils/error';
 
 export class OrderItemService {
+    private sequelize: any;
+    constructor(sequelize: any) {
+        this.sequelize = sequelize;
+    }
     public addOrderItemtoCart = async (bodyOrderItem: {
         id: number;
         phone_id: number;
@@ -62,6 +68,28 @@ export class OrderItemService {
             } else {
                 throw new CustomError(500, error.errors[0].message);
             }
+        }
+    };
+    public bestSellingPhone = async (): Promise<any> => {
+        try {
+            const response = await this.sequelize.query(
+                `SELECT distinct phones.id, phones.*,  sum(orderItems.quantity) as sum FROM orderItems 
+                 JOIN phone_variants ON orderItems.phone_variant_id = phone_variants.id
+                 JOIN phones ON phone_variants.phone_id = phones.id 
+                 WHERE orderItems.order_id IS NOT NULL
+                 GROUP BY phones.id 
+                 ORDER BY sum desc
+                 LIMIT 10
+                `
+            );
+            return {
+                success: true,
+                message: 'lấy thành công',
+                statusCode: 200,
+                phones: response[0],
+            };
+        } catch (error) {
+            throw new CustomError(500, 'lỗi server');
         }
     };
 }

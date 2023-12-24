@@ -45,6 +45,7 @@ export enum Endpoins {
     //orderItem
     addOrderItemtoCart = '/addtocart',
     getOrderItemCart = '/order-item-cart',
+    bestSellingPhone = '/best',
     //slide
     addSlide = '/add',
     getAllSlides = '/slides',
@@ -52,4 +53,6 @@ export enum Endpoins {
     directOrder = '/direct-order',
     updateInfoOrder = '/update',
     cancleOrder = '/cancle',
+    //reviews
+    addReview = '/add',
 }

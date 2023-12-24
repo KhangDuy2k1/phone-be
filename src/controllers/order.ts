@@ -80,6 +80,18 @@ export class OrderController {
     };
     public cancleOrder = async (req: Request, res: Response): Promise<any> => {
         const id: any = req.query.id;
-        const response = await this.orderService.cancleOrder(id);
+
+        try {
+            const { statusCode, ...others } =
+                await this.orderService.cancleOrder(id);
+            res.status(statusCode).json({
+                ...others,
+            });
+        } catch (error: any) {
+            res.status(error.statusCode).json({
+                success: false,
+                message: error.message,
+            });
+        }
     };
 }

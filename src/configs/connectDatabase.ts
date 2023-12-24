@@ -1,6 +1,5 @@
 import { Sequelize } from 'sequelize-typescript';
 import { UserModel } from '../models/user';
-// import { CustomError } from '../utils/error';
 import { CategoryModel } from '../models/category';
 import { ConfigModel } from '../models/config';
 import { DiscountModel } from '../models/discount';
@@ -13,6 +12,7 @@ import { PhoneVariantModel } from '../models/phoneVariant';
 import { CartModel } from '../models/cart';
 import { OrderItemModel } from '../models/orderItem';
 import { SlideModel } from '../models/slide';
+import { ReviewModel } from '../models/review';
 export class ConnectDatabase {
     private sequelize: any;
     private databaseName: string;
@@ -48,6 +48,7 @@ export class ConnectDatabase {
                 ImageModel,
                 PhoneModel,
                 SlideModel,
+                ReviewModel,
             ]);
             await this.sequelize.sync({ force: false }).then(() => {
                 console.log('Cơ sở dữ liệu đã được đồng bộ hóa.');

@@ -9,6 +9,7 @@ import {
 import { OrderModel } from './order';
 import { CartModel } from './cart';
 import { BaseModel, IBaseModel } from './base';
+import { ReviewModel } from './review';
 export interface IUserLogin {
     username: string;
     password: string;
@@ -90,4 +91,6 @@ export class UserModel extends BaseModel<IUser> {
     orders!: OrderModel[];
     @HasOne(() => CartModel)
     cart!: CartModel;
+    @HasMany(() => ReviewModel)
+    reviews!: ReviewModel[];
 }

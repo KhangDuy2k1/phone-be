@@ -54,5 +54,21 @@ export class OrderItemController {
             });
         }
     };
-    // public;
+    public bestSellingPhone = async (
+        req: Request,
+        res: Response
+    ): Promise<any> => {
+        try {
+            const { statusCode, ...others } =
+                await this.orderItemService.bestSellingPhone();
+            res.status(statusCode).json({
+                ...others,
+            });
+        } catch (error: any) {
+            res.status(error.statusCode).json({
+                success: false,
+                message: error.message,
+            });
+        }
+    };
 }
