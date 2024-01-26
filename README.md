@@ -6,10 +6,11 @@
 
 ## Tính Năng
 
-- **Danh Mục Sản Phẩm:** Hiển thị các danh mục sản phẩm như điện thoại di động theo thương hiệu, Sắp xếp sản phẩm theo giá từ cao xuống thấp hay từ thấp lên cao giúp khách hàng
--  thuận tiện hơn trong việc tìm ra những sản phẩm vs giá mình mong muốn.
--  Người dùng có thể xem được những sản phẩm đang được bán chạy nhất và những sản phẩm có mức giảm giá cao nhất để có thể lựa chọn.
+- **Danh Mục Sản Phẩm:** Hiển thị các danh mục sản phẩm như điện thoại di động theo thương hiệu, Sắp xếp sản phẩm theo giá từ cao xuống thấp hay từ thấp lên cao giúp khách hàng thuận tiện hơn trong việc tìm ra những sản phẩm vs giá mình mong muốn.
+  Người dùng có thể xem được những sản phẩm đang được bán chạy nhất và những sản phẩm có mức giảm giá cao nhất để có thể lựa chọn.
 - **Tìm Kiếm và Lọc:** Cung cấp khả năng tìm kiếm sản phẩm theo tên.
+- **Bình Luận và Đánh giá:** Người dùng có thể đưa ra các nhận xét và đánh giá về sản phẩm để những người dùng khác có thể tham khảo ý kiến và
+  dễ dàng hơn trong những lựa chọn của mình khi chưa từng trải nghiệm sản phẩm.
 - **Giỏ Hàng và Thanh Toán:** Cho phép người dùng thêm sản phẩm vào giỏ hàng và thực hiện quá trình thanh toán an toàn và thuận lợi.
   
 - **Tài Khoản Người Dùng:** Người dùng có thể đăng ký tài khoản, đăng nhập, đổi mật khẩu, lấy lại mật khẩu đã quên để theo dõi đơn hàng và lịch sử mua sắm.
