@@ -21,6 +21,7 @@
    - Yêu cầu cài đặt Node.js và npm.
    - Clone dự án từ kho GitHub.
    - Chạy `npm install` để cài đặt các dependencies.
+   - tạo file .env để thiết lập biến môi trường.
 
 2. **Chạy Ứng Dụng:**
    - Chạy lệnh `npm start` để khởi động server.
