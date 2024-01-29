@@ -4,10 +4,10 @@ import { UserModel } from '../models/user';
 import { CustomError } from '../utils/error';
 import { HashPassWord } from '../utils/hashPassword';
 import { Validator } from '../utils/validate';
-import { SendMail } from '../utils/sendMail';
+import { Mail } from '../utils/mail';
 import { JWT } from '../utils/jwt';
 const jwt = new JWT();
-const sendMail = new SendMail();
+const mail = new Mail();
 const validator = new Validator();
 const hashPassword = new HashPassWord();
 export class AuthService {
@@ -42,7 +42,6 @@ export class AuthService {
             const userRegister = await UserModel.create({ ...infoUser });
             return userRegister;
         } catch (error) {
-            console.error(error);
             throw new CustomError(500, 'lỗi server');
         }
     };
@@ -94,33 +93,38 @@ export class AuthService {
     };
     public login = async (infoUserLogin: IUserLogin): Promise<any> => {
         try {
-            const response: any = await UserModel.findOne({
-                where: {
-                    username: infoUserLogin.username,
-                },
-            });
-            if (!response) {
-                throw new CustomError(404, 'sai username');
-            } else if (
-                !hashPassword.checkPassword(
-                    infoUserLogin.password,
-                    response.password
-                )
-            ) {
-                throw new CustomError(404, 'sai mật khẩu');
+            if (!infoUserLogin.username || !infoUserLogin.password) {
+                throw new CustomError(400, 'vui lòng nhập đầy đủ thông tin');
             } else {
-                const accessToken: string = jwt.generateToken({
-                    id: response.id,
+                const response: any = await UserModel.findOne({
+                    where: {
+                        username: infoUserLogin.username,
+                    },
                 });
-                // console.log(accessToken);
-                const { password, ...other } = response.dataValues;
-                return {
-                    success: true,
-                    statusCode: 200,
-                    mes: 'đăng nhập thành công',
-                    accessToken: accessToken,
-                    user: { ...other },
-                };
+
+                if (!response) {
+                    throw new CustomError(404, 'sai username');
+                } else if (
+                    !hashPassword.checkPassword(
+                        infoUserLogin.password,
+                        response.password
+                    )
+                ) {
+                    throw new CustomError(404, 'sai mật khẩu');
+                } else {
+                    const accessToken: string = jwt.generateToken({
+                        id: response.id,
+                    });
+                    // console.log(accessToken);
+                    const { password, ...other } = response.dataValues;
+                    return {
+                        success: true,
+                        statusCode: 200,
+                        message: 'đăng nhập thành công',
+                        accessToken: accessToken,
+                        user: { ...other },
+                    };
+                }
             }
         } catch (error) {
             if (error instanceof CustomError) {
@@ -185,7 +189,7 @@ export class AuthService {
                 if (!response) {
                     throw new CustomError(400, 'email chưa được đăng kí');
                 } else {
-                    await sendMail.sendMail(toEmail);
+                    await mail.sendMail(toEmail);
                     return {
                         statusCode: 200,
                         mes: 'gửi otp thành công',
@@ -203,7 +207,7 @@ export class AuthService {
     };
     checkOtp = async (otp: string) => {
         try {
-            const response = await sendMail.checkOtp(otp);
+            const response = await mail.checkOtp(otp);
             if (!response) {
                 throw new CustomError(401, 'mã xác thực không hợp lệ');
             } else {
@@ -213,7 +217,12 @@ export class AuthService {
                 };
             }
         } catch (error) {
-            throw new CustomError(500, 'lỗi server');
+            if(error instanceof CustomError){
+                throw error;
+            }else {
+                throw new CustomError(500, "lỗi server")
+            }
+           
         }
     };
     changePassword = async (passwordDetail: {
@@ -263,4 +272,35 @@ export class AuthService {
             }
         }
     };
+    public passwordUpdateForgot = async(bodyPasswordUpdate: {
+                email: string,
+                password: string,
+                newPassword: string
+    }): Promise<any> => { 
+        try {
+            if(bodyPasswordUpdate.password !== bodyPasswordUpdate.newPassword){
+                throw new CustomError(400, "mật khẩu nhập lại không đúng")
+            }else {
+                const result = await UserModel.update({
+                    password: hashPassword.hashPassword(bodyPasswordUpdate.password)
+                },{
+                    where: {
+                        email: bodyPasswordUpdate.email
+                    }
+                })
+            return {
+                status: true,
+                statusCode:200,
+                message: "cập nhật thành công"
+            }
+            }
+        } catch (error) {
+            if(error instanceof CustomError){
+                throw error
+            }else { 
+                throw new CustomError(500, "lỗi server")
+            }
+        }
+         
+    }
 }

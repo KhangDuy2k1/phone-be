@@ -13,6 +13,7 @@ import { CartModel } from '../models/cart';
 import { OrderItemModel } from '../models/orderItem';
 import { SlideModel } from '../models/slide';
 import { ReviewModel } from '../models/review';
+import { CommentModel } from '../models/comment';
 export class ConnectDatabase {
     private sequelize: any;
     private databaseName: string;
@@ -27,6 +28,19 @@ export class ConnectDatabase {
         this.sequelize = new Sequelize(
             `mysql://${this.username}:${this.password}@localhost:3306/${this.databaseName}`
         );
+
+        //=================================================
+        //  this.sequelize = new Sequelize('sql12677311', 'sql12677311', 'FPyXkDReZD', {
+        //     host: 'sql12.freemysqlhosting.net',
+        //     dialect: 'mysql',
+        //     pool: {
+        //         max: 10, // Adjust this value based on your requirements
+        //         min: 0,
+        //         acquire: 30000,
+        //         idle: 10000,
+        //       },
+        
+        //   });
     }
     getSequelize = (): any => {
         return this.sequelize;
@@ -49,8 +63,9 @@ export class ConnectDatabase {
                 PhoneModel,
                 SlideModel,
                 ReviewModel,
+                CommentModel,
             ]);
-            await this.sequelize.sync({ force: false }).then(() => {
+            await this.sequelize.sync().then(() => {
                 console.log('Cơ sở dữ liệu đã được đồng bộ hóa.');
             });
             console.log('Connection has been established successfully.');

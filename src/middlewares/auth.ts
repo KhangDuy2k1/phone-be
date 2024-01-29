@@ -36,7 +36,9 @@ export class AuthMiddleware {
         }
     };
     isAdmin = (req: Request, res: Response, next: NextFunction) => {
+      
         const role = (req as any).user.role;
+        console.log("==================")
         if (role !== 'admin') {
             return res.status(401).json({
                 status: false,

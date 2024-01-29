@@ -6,9 +6,10 @@ export class ColorService {
         try {
             const checkColorExist = await ColorModel.findOne({
                 where: {
-                    name: color.name,
+                    name: "đỏ",
                 },
             });
+
             if (checkColorExist) {
                 throw new CustomError(409, 'color đã tồn tại ');
             } else {

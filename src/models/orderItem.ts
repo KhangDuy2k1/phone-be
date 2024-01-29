@@ -5,7 +5,6 @@ import {
     Table,
     ForeignKey,
 } from 'sequelize-typescript';
-// import { IOrderItem } from '../interfaces/orderItem';
 import { PhoneVariantModel } from './phoneVariant';
 import { CartModel } from './cart';
 import { OrderModel } from './order';
@@ -19,6 +18,7 @@ export interface IOrderItem extends IBaseModel {
 }
 @Table({
     tableName: 'orderItems',
+    collate: 'utf8mb4_unicode_ci'
 })
 export class OrderItemModel extends BaseModel<IOrderItem> {
     @ForeignKey(() => PhoneVariantModel)

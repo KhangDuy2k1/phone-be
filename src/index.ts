@@ -1,12 +1,12 @@
-import express from 'express';
+import express, {Application} from 'express';
+import http, { Server } from 'http';
 import cors from 'cors';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
-import * as env from 'dotenv';
 import morgan from 'morgan';
 import { authRouter } from './routes/auth';
-env.config();
+import { initSocket } from '../socket';
 import { ConnectDatabase } from './configs/connectDatabase';
 import { PassportConfig } from './configs/passport';
 import { UrlError } from './middlewares/urlError';
@@ -23,23 +23,25 @@ import { cartRouter } from './routes/cart';
 import { slideRouter } from './routes/slide';
 import { orderRouter } from './routes/order';
 import { reviewRouter } from './routes/review';
-const passportConfig = new PassportConfig();
-const urlError = new UrlError();
+import { commentRouter } from './routes/comment';
+import { userRouter } from './routes/user';
 export class App {
-    app: express.Application;
-    port: number | string;
-    passport: any;
-    constructor() {
+    private app: Application;
+    private server: Server;
+    private port: number | string;
+    private passport: any;
+    constructor(port: number | string) {
         this.passport = passport;
-        this.port = process.env.PORT || 8080;
+        this.port = port;
         this.app = express();
+        this.server = http.createServer(this.app);
         this.configApp();
         this.setUpPassport();
         this.Api();
     }
     private setUpPassport = () => {
-        this.passport.use(passportConfig.google());
-        this.passport.use(passportConfig.facebook());
+        this.passport.use(PassportConfig.google())
+        this.passport.use(PassportConfig.facebook())
     };
     configApp = () => {
         this.app.use(cors());
@@ -56,6 +58,7 @@ export class App {
         this.app.use(express.json());
     };
     Api = () => {
+        this.app.use('/api/comment', commentRouter);
         this.app.use('/api/review', reviewRouter);
         this.app.use('/api/order', orderRouter);
         this.app.use('/api/slide', slideRouter);
@@ -70,12 +73,15 @@ export class App {
         this.app.use('/api/category', categoryRouter);
         this.app.use('/api/phone', phoneRouter);
         this.app.use('/api/auth', authRouter);
-        this.app.use(urlError.checkUrl);
+        this.app.use('/api/user', userRouter)
+        this.app.use(UrlError.checkUrl);
     };
     runApp = () => {
-        this.app.listen(this.port, async () => {
+        this.server.listen(this.port, async () => {
             await new ConnectDatabase().connectDatabase();
+            initSocket(this.server);
             console.log(`server is running on port ${this.port}`);
         });
+        this.server.setTimeout(5000);
     };
 }

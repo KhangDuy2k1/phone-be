@@ -25,3 +25,11 @@ orderItemRouter.get(
     Endpoins.bestSellingPhone,
     orderItemController.bestSellingPhone
 );
+orderItemRouter.delete(
+    Endpoins.deleteOrderItem,
+    orderItemController.deleteOrderItem
+)
+orderItemRouter.patch(
+    Endpoins.updateQuantity,
+    orderItemController.updateQuantity
+)

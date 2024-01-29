@@ -21,19 +21,21 @@ import { ColorModel } from './color';
 import { PhoneVariantModel } from './phoneVariant';
 import { StorageModel } from './storage';
 import { BaseModel, IBaseModel } from './base';
+import { CommentModel } from './comment';
 export interface IPhone extends IBaseModel {
     name: string;
     discount_id: number;
     category_id: number;
     config_id: number;
     inventory_number: number;
-    star_number?: number;
+    star_number?: any;
     avatar: string;
     desc: string;
     price: number;
 }
 @Table({
     tableName: 'phones',
+    collate: 'utf8mb4_unicode_ci'
 })
 export class PhoneModel extends BaseModel<IPhone> {
     @ForeignKey(() => CategoryModel)
@@ -70,7 +72,7 @@ export class PhoneModel extends BaseModel<IPhone> {
     inventory_number!: number;
 
     @Column({
-        type: DataType.DECIMAL,
+        type: DataType.FLOAT,
         defaultValue: 0,
     })
     star_number!: number;
@@ -96,12 +98,12 @@ export class PhoneModel extends BaseModel<IPhone> {
         allowNull: true,
     })
     price!: number;
-    @BelongsToMany(() => ColorModel, () => PhoneVariantModel)
-    colors!: ColorModel[];
-    @BelongsToMany(() => StorageModel, () => PhoneVariantModel)
-    storage!: StorageModel[];
+    @HasMany(() => PhoneVariantModel)
+    phone_variants!: PhoneVariantModel[]
     @HasMany(() => ImageModel)
     images!: ImageModel[];
     @HasMany(() => ReviewModel)
     reviews!: ReviewModel[];
+    @HasMany(() => CommentModel)
+    comments!: CommentModel[];
 }

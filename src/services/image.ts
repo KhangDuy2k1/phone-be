@@ -39,4 +39,7 @@ export class ImageService {
             }
         }
     };
+    getImageById = () => {
+        
+    }
 }

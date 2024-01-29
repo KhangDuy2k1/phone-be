@@ -6,6 +6,7 @@ export interface ICategory extends IBaseModel {
 }
 @Table({
     tableName: 'categories',
+    collate: 'utf8mb4_unicode_ci'
 })
 export class CategoryModel extends BaseModel<ICategory> {
     @Column({

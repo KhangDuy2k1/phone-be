@@ -2,8 +2,7 @@ import nodemailer from 'nodemailer';
 import { CustomError } from './error';
 import { Redis } from '../configs/redis';
 
-export class SendMail {
-    // redis?: any;
+export class Mail {
     client: any;
     transporter: any;
     constructor() {
@@ -24,7 +23,7 @@ export class SendMail {
     checkOtp = async (otp: string): Promise<boolean> => {
         try {
             const otpResponse: string = await this.client.getValue('otp');
-            return otpResponse === otp;
+            return otpResponse.toString() === otp;
         } catch (error) {
             throw new CustomError(500, 'Lỗi server');
         }

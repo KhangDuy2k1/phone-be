@@ -13,3 +13,7 @@ phoneVariant.post(
     Endpoins.addPhoneVariant,
     phoneVariantController.addPhoneVariant
 );
+phoneVariant.get(
+    Endpoins.getPriceSelect, 
+    phoneVariantController.selectColorStoreId
+) 

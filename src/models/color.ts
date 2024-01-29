@@ -14,14 +14,15 @@ export interface IColor extends IBaseModel {
 }
 @Table({
     tableName: 'colors',
+    collate: 'utf8mb4_unicode_ci'
 })
 export class ColorModel extends BaseModel<IColor> {
     @Column({
         type: DataType.STRING,
     })
     name!: string;
-    @BelongsToMany(() => PhoneModel, () => PhoneVariantModel)
-    phones!: PhoneModel[];
+    // @BelongsToMany(() => PhoneModel, () => PhoneVariantModel)
+    // phones!: PhoneModel[];
     @HasMany(() => PhoneVariantModel)
-    phoneVariants!: PhoneVariantModel[];
+    phone_variants!: PhoneVariantModel[]
 }

@@ -72,6 +72,7 @@ export class OrderService {
                     order_adress: bodyOrder.address_order,
                     phone_adress: bodyOrder.phone_order,
                     total_amount: bodyOrder.total_amount,
+                    status: "đã đặt hàng"
                 },
                 {
                     transaction,
@@ -204,7 +205,7 @@ export class OrderService {
                                 );
                             } else {
                                 await Promise.all([
-                                    await OrderItemModel.update(
+                                     OrderItemModel.update(
                                         {
                                             order_id: null,
                                         },
@@ -215,7 +216,7 @@ export class OrderService {
                                             transaction,
                                         }
                                     ),
-                                    await OrderModel.update(
+                                     OrderModel.update(
                                         {
                                             status: 'đã hủy đơn',
                                         },
@@ -245,6 +246,49 @@ export class OrderService {
             } else {
                 throw new CustomError(500, 'lỗi server');
             }
+        }
+    };
+    public getAllOrder = async (): Promise<any> => {
+        try {
+            const orders = await OrderModel.findAll({ raw: true });
+            return {
+                success: true,
+                statusCode: 200,
+                messsage: 'lấy thành công',
+                orders,
+            };
+        } catch (error) {
+            throw new CustomError(500, 'lỗi server');
+        }
+    };
+    public detailOrder = async (id: number): Promise<any> => {
+        try {
+            const orderDetail = await OrderModel.findOne({
+                where: {
+                    id: id,
+                },
+                include: {
+                    model: OrderItemModel,
+                    include: [
+                        {
+                            model: PhoneVariantModel,
+                            include: [
+                                {
+                                    model: PhoneModel,
+                                },
+                            ],
+                        },
+                    ],
+                },
+            });
+            return {
+                success: true,
+                statusCode: 200,
+                message: 'lấy thành công',
+                orderDetail,
+            };
+        } catch (error) {
+            throw new CustomError(500, 'lỗi server');
         }
     };
 }

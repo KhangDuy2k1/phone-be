@@ -12,6 +12,7 @@ export interface IConfig extends IBaseModel {
 }
 @Table({
     tableName: 'configs',
+    collate: 'utf8mb4_unicode_ci'
 })
 export class ConfigModel extends BaseModel<IConfig> {
     @Column({

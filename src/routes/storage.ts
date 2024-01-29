@@ -11,3 +11,5 @@ export const storageRouter = express.Router();
 storageRouter.post(Endpoins.addStorage, storageController.addStorage);
 storageRouter.delete(Endpoins.deleteStorage, storageController.deleteStorage);
 storageRouter.put(Endpoins.updateStorage, storageController.updateStorage);
+storageRouter.get(Endpoins.allStorage, storageController.getAllStorage);
+

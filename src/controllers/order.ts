@@ -17,7 +17,7 @@ export class OrderController {
         const bodyOrder = req.body;
 
         try {
-            console.log('======================');
+       
             // const bodyOrderChecked = await this.validator.checkRequestBody(
             //     this.joi,
             //     {
@@ -29,7 +29,7 @@ export class OrderController {
             //     bodyOrder
             // );
             // console.log(bodyOrderChecked);
-            console.log('======================');
+    
             const { statusCode, ...others } =
                 await this.orderService.orderDirectPayment({
                     id_user: id,
@@ -84,6 +84,35 @@ export class OrderController {
         try {
             const { statusCode, ...others } =
                 await this.orderService.cancleOrder(id);
+            res.status(statusCode).json({
+                ...others,
+            });
+        } catch (error: any) {
+            res.status(error.statusCode).json({
+                success: false,
+                message: error.message,
+            });
+        }
+    };
+    public getAllOrder = async (req: Request, res: Response): Promise<any> => {
+        try {
+            const { statusCode, ...others } =
+                await this.orderService.getAllOrder();
+            res.status(statusCode).json({
+                ...others,
+            });
+        } catch (error: any) {
+            res.status(error.statusCode).json({
+                success: false,
+                message: error.message,
+            });
+        }
+    };
+    public detailOrder = async (req: Request, res: Response): Promise<any> => {
+        const id: any = req.query.id;
+        try {
+            const { statusCode, ...others } =
+                await this.orderService.detailOrder(id);
             res.status(statusCode).json({
                 ...others,
             });

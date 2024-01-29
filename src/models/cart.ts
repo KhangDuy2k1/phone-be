@@ -16,6 +16,7 @@ export interface ICart extends IBaseModel {
 
 @Table({
     tableName: 'carts',
+    collate: 'utf8mb4_unicode_ci'
 })
 export class CartModel extends BaseModel<ICart> {
     @ForeignKey(() => UserModel)

@@ -61,14 +61,11 @@ export class AuthController {
             username: string;
             password: string;
         } = req.body;
+
         try {
-            const response = await this.authServive.login(infoUserLogin);
-            return res.status(response.statusCode).json({
-                success: true,
-                mes: response.mes,
-                token: response.accessToken,
-                user: response.user,
-            });
+            const { statusCode, ...others } =
+                await this.authServive.login(infoUserLogin);
+            return res.status(statusCode).json(others);
         } catch (error: any) {
             res.status(error.statusCode).json({
                 success: false,
@@ -80,7 +77,7 @@ export class AuthController {
         req: Request,
         res: Response
     ): Promise<any> => {
-        const email = req.query.email as string;
+        const email: any = req.query.email;
         try {
             const response = await this.authServive.sendOtp(email);
             return res.status(response.statusCode).json({
@@ -110,7 +107,7 @@ export class AuthController {
         }
     };
     checkOtpForgetPassword = async (req: Request, res: Response) => {
-        const otp: string = req.query.otp as string;
+        const otp: string = req.body.otp;
         try {
             const response = await this.authServive.checkOtp(otp);
 
@@ -118,19 +115,10 @@ export class AuthController {
                 ...response,
             });
         } catch (error: any) {
-            switch (error.message) {
-                case 'mã xác thực không hợp lệ':
-                    res.status(error.statusCode).json({
-                        status: false,
-                        mes: error.message,
-                    });
-                    break;
-                default:
-                    res.status(error.statusCode).json({
-                        status: false,
-                        mes: error.message,
-                    });
-            }
+            res.status(error.statusCode).json({
+                status: false,
+                message: error.message
+            })
         }
     };
     changePassword = async (req: Request, res: Response) => {
@@ -171,4 +159,18 @@ export class AuthController {
             }
         }
     };
+    public passwordUpdateForget = async(req: Request, res: Response): Promise<any> => { 
+        const {email, password, newPassword} = req.body
+        try {
+            const {statusCode, ...others} = await this.authServive.passwordUpdateForgot({email, password, newPassword})
+            res.status(statusCode).json({
+                ...others
+            })
+        } catch (error: any) {
+            res.status(error.statusCode).json({
+                status: false,
+                message: error.message
+            })
+        }
+    }
 }

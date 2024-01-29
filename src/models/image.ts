@@ -13,6 +13,7 @@ export interface IImage extends IBaseModel {
 }
 @Table({
     tableName: 'images',
+    collate: 'utf8mb4_unicode_ci'
 })
 export class ImageModel extends BaseModel<IImage> {
     @ForeignKey(() => PhoneModel)

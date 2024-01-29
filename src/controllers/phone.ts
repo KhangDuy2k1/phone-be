@@ -73,4 +73,47 @@ export class PhoneController {
             });
         }
     };
+    public addPhoneToWarehouse = async (
+        req: Request,
+        res: Response
+    ): Promise<any> => {
+        const id: any = req.query.id;
+        const number_phone: number = req.body.number_phone;
+        try {
+            const { statusCode, ...others } =
+                await this.phoneService.addPhoneToWarehouse(id, number_phone);
+            res.status(statusCode).json({
+                ...others,
+            });
+        } catch (error: any) {
+            res.status(error.statusCode).json({
+                success: false,
+                message: error.message,
+            });
+        }
+    };
+    public listPhonesMassiveDiscount = async(req: Request, res: Response): Promise<any> => {
+            try {
+                const {statusCode, ...others} = await this.phoneService.listPhonesMassiveDiscount()
+                res.status(statusCode).json({
+                    ...others
+                })
+            } catch (error:any) {
+                res.status(error.statusCode).json({
+                    success: false,
+                    message: error.message
+                })
+            }
+    }
+    getColorAndStorageById =async(req: Request, res: Response): Promise<any> => {   
+        const id = parseInt(req.params.id)
+            try {
+                const result = await this.phoneService.getColorAndStorageById(id)
+                res.status(200).json(result)
+            } catch (error:any) {
+                res.status(error.statusCode).json({
+                    message: error.message
+                })
+            }
+    }
 }

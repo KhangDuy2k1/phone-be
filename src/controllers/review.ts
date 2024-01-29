@@ -27,4 +27,15 @@ export class ReviewController {
             });
         }
     };
+    public reviewInfo = async(req: Request, res: Response):Promise<any> => {
+         try {
+            const response = await this.reviewService.reviewInfo()
+            res.status(200).json(response)
+         } catch (error:any) {
+            res.status(error.statusCode).json({
+                message: error.message
+            }
+            )
+         }
+    }
 }

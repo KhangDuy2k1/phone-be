@@ -75,4 +75,17 @@ export class StorageService {
             }
         }
     };
+    public getAllStorage = async():Promise<any> => { 
+            try {
+                const result = await StorageModel.findAll()
+                return {
+                    success: true,
+                    message : "lấy thành công",
+                    statusCode:200,
+                    stores: result
+                }
+            } catch (error) {
+               throw new CustomError(500, "lỗi server")
+            }
+    }
 }

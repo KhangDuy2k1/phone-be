@@ -1,5 +1,6 @@
 import { CartModel } from '../models/cart';
 import { ColorModel } from '../models/color';
+import { DiscountModel } from '../models/discount';
 import { OrderItemModel } from '../models/orderItem';
 import { PhoneModel } from '../models/phone';
 import { PhoneVariantModel } from '../models/phoneVariant';
@@ -33,7 +34,7 @@ export class CartService {
                         include: [
                             {
                                 model: PhoneVariantModel,
-                                attributes: ['id'],
+                                attributes: ['id', "price_detail"],
                                 include: [
                                     {
                                         model: PhoneModel,
@@ -44,6 +45,12 @@ export class CartService {
                                             'avatar',
                                             'price',
                                         ],
+                                        include: [
+                                            {
+                                                model: DiscountModel,
+                                                attributes: ["scale"]
+                                            }
+                                        ]
                                     },
                                     {
                                         model: ColorModel,
@@ -54,6 +61,7 @@ export class CartService {
                                         attributes: ['id', 'memory'],
                                     },
                                 ],
+                                
                             },
                         ],
                     },

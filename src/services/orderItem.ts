@@ -73,9 +73,18 @@ export class OrderItemService {
     public bestSellingPhone = async (): Promise<any> => {
         try {
             const response = await this.sequelize.query(
-                `SELECT distinct phones.id, phones.*,  sum(orderItems.quantity) as sum FROM orderItems 
+                `SELECT distinct
+                  phones.id, 
+                  discounts.scale, 
+                  phones.inventory_number,
+                  phones.avatar ,
+                  phones.name,
+                  phones.price,
+                  phones.star_number,
+                  sum(orderItems.quantity) as sum FROM orderItems 
                  JOIN phone_variants ON orderItems.phone_variant_id = phone_variants.id
                  JOIN phones ON phone_variants.phone_id = phones.id 
+                 JOIN discounts ON discounts.id = phones.discount_id
                  WHERE orderItems.order_id IS NOT NULL
                  GROUP BY phones.id 
                  ORDER BY sum desc
@@ -89,7 +98,41 @@ export class OrderItemService {
                 phones: response[0],
             };
         } catch (error) {
+            console.error(error)
             throw new CustomError(500, 'lỗi server');
         }
     };
+    public deleteOrderItem = async(id_item: number):Promise<any> => {
+        try {
+            const result = await OrderItemModel.destroy({
+                where: {
+                    id: id_item
+                }
+            })
+            return {
+                statusCode: 200,
+                message: "Xóa thành công"
+            }
+        } catch (error) {
+            throw new CustomError(500, "lỗi server");
+        }
+    }
+    public updateQuantity = async(id_item: number, new_quantity: number):Promise<any> => {
+         try {
+  
+            const result = await OrderItemModel.update({
+                    quantity: new_quantity
+            }, {
+                where: {
+                    id: id_item
+                }
+            })
+            return {
+                statusCode :200,
+                message: "Cập nhật số lượng thành công"
+            }
+         } catch (error) {
+            throw new CustomError(500, "lỗi server")
+         }
+    }
 }

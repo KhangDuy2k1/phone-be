@@ -23,3 +23,5 @@ orderRouter.post(
 );
 orderRouter.patch(Endpoins.updateInfoOrder, orderController.updateInfoOrder);
 orderRouter.patch(Endpoins.cancleOrder, orderController.cancleOrder);
+orderRouter.get(Endpoins.allOrders, orderController.getAllOrder);
+orderRouter.get(Endpoins.detailOrder, orderController.detailOrder);

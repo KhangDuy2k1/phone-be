@@ -11,12 +11,16 @@ export const authRouter = express.Router();
 authRouter.post(Endpoins.regiter, authController.register);
 authRouter.post(Endpoins.login, authController.login);
 authRouter.get(Endpoins.sendOtp, authController.sendOtpForgetPassword);
-authRouter.get(Endpoins.checkOtp, authController.checkOtpForgetPassword);
+authRouter.post(Endpoins.checkOtp, authController.checkOtpForgetPassword);
 authRouter.post(
     Endpoins.changePassword,
     authMiddleware.verifyToken,
     authController.changePassword
 );
+authRouter.patch(
+    Endpoins.changePasswordForget, 
+    authController.passwordUpdateForget
+)
 authRouter.get(
     Endpoins.logGoogle,
     passport.authenticate('google', { scope: ['email'], session: false })
@@ -27,5 +31,6 @@ authRouter.get(
         scope: ['user_friends', 'manage_pages'],
     })
 );
+
 authRouter.get(Endpoins.googleCb, authMiddleware.googleCb);
 authRouter.get(Endpoins.facebookCb, authMiddleware.facebookCb);

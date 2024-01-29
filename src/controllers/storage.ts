@@ -81,4 +81,15 @@ export class StorageController {
             });
         }
     };
+    public getAllStorage = async(req: Request, res: Response): Promise<any> => {
+           try {
+                const {statusCode, ...others} = await this.storageService.getAllStorage()
+                res.status(statusCode).json(others)
+           } catch (error: any) {
+                res.status(error.statusCode).json({
+                    success: false,
+                    message: error.message
+                })
+           }
+    }
 }

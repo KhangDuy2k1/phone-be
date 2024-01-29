@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import { JsonWebToken } from '../constants/jwtConstants';
-// import fs from 'fs';
 import { CustomError } from './error';
 export class JWT {
     generateToken = (data: { id: number }): string => {

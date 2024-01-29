@@ -10,6 +10,7 @@ import { OrderModel } from './order';
 import { CartModel } from './cart';
 import { BaseModel, IBaseModel } from './base';
 import { ReviewModel } from './review';
+import { CommentModel } from './comment';
 export interface IUserLogin {
     username: string;
     password: string;
@@ -25,6 +26,7 @@ export interface IUser extends IBaseModel, IUserLogin {
 }
 @Table({
     tableName: 'users',
+    collate: 'utf8mb4_unicode_ci'
 })
 export class UserModel extends BaseModel<IUser> {
     @Column({
@@ -93,4 +95,6 @@ export class UserModel extends BaseModel<IUser> {
     cart!: CartModel;
     @HasMany(() => ReviewModel)
     reviews!: ReviewModel[];
+    @HasMany(() => CommentModel)
+    comments!: CommentModel[];
 }

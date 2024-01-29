@@ -6,6 +6,7 @@ export interface IDiscount extends IBaseModel {
 }
 @Table({
     tableName: 'discounts',
+    collate: 'utf8mb4_unicode_ci'
 })
 export class DiscountModel extends BaseModel<IDiscount> {
     @Column({

@@ -14,3 +14,7 @@ reviewRouter.post(
     authMiddleware.verifyToken,
     reviewController.addReview
 );
+reviewRouter.get(
+    Endpoins.reviewInfo,
+    reviewController.reviewInfo
+)

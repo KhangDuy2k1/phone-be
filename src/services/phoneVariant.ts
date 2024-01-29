@@ -6,6 +6,7 @@ export class PhoneVariantService {
         bodyPhoneVariant: IPhoneVariant
     ): Promise<any> => {
         try {
+
             const isCheck = await PhoneVariantModel.findOne({
                 where: {
                     phone_id: bodyPhoneVariant.phone_id,
@@ -26,6 +27,7 @@ export class PhoneVariantService {
                 };
             }
         } catch (error) {
+            console.error(error);
             if (error instanceof CustomError) {
                 throw error;
             } else {
@@ -33,4 +35,16 @@ export class PhoneVariantService {
             }
         }
     };
+    selectColorStoreId = async(bodySelect:{phone_id: any, color_id: any, storage_id: any}):Promise<any> => {
+        try {
+            const result = await PhoneVariantModel.findOne({
+                 where: bodySelect
+            })
+            return {
+               price: result?.dataValues.price_detail
+            }
+        } catch (error) {
+            throw new CustomError(500, "loi server")
+        }   
+}
 }

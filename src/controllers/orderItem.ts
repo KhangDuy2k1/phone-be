@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { OrderItemService } from '../services/orderItem';
 import { Validator } from '../utils/validate';
+import { CustomError } from '../utils/error';
 export class OrderItemController {
     private orderItemService: OrderItemService;
     private joi: any;
@@ -71,4 +72,35 @@ export class OrderItemController {
             });
         }
     };
+    public deleteOrderItem = async(req: Request, res: Response):Promise<any> => {
+        const id_order_item = req.params.id
+        try {
+            const {statusCode, others} = await this.orderItemService.deleteOrderItem(parseInt(id_order_item))
+           res.status(statusCode).json({
+            ...others
+           })
+        } catch (error:any) {
+           res.status(error.statusCode).json({
+            message: error.message
+           })
+        }
+    }
+    public updateQuantity = async(req: Request, res: Response): Promise<any> => 
+      
+    { 
+        const id_item = req.params.id;
+        const quantity = req.body.quantity;
+        console.log(id_item, quantity)
+        try {
+            const {statusCode, ...others}  = await this.orderItemService.updateQuantity(parseInt(id_item), quantity)
+            res.status(statusCode).json({
+                ...others
+            })
+        } catch (error: any) {
+            res.status(error.statusCode).json({
+                message: error.message
+            })
+        }
+      
+    }
 }

@@ -10,6 +10,9 @@ export class ReviewService {
     private checkStarNumber = (starNumber: number): boolean => {
         return starNumber >= 0 && starNumber <= 5;
     };
+    private caculationReview = (sum_star: number, totalReview:number):number => {       
+                return sum_star/totalReview;
+    } 
     public addReview = async (bodyReview: {
         user_id: number;
         phone_id: number;
@@ -47,9 +50,7 @@ export class ReviewService {
                         },
                     }),
                 ]);
-                let star_number: number =
-                    (allReview as any).sum_star / countReview;
-                console.log(star_number);
+                let star_number = this.caculationReview((allReview as any).sum_star, countReview)
                 const phoneUpdate = await PhoneModel.update(
                     {
                         star_number: star_number,
@@ -70,7 +71,6 @@ export class ReviewService {
             }
         } catch (error) {
             await transaction.rollback();
-            console.log(error);
             if (error instanceof CustomError) {
                 throw error;
             } else {
@@ -78,4 +78,43 @@ export class ReviewService {
             }
         }
     };
+    public reviewInfo = async():Promise<any> => {
+            try {
+                const [totalReview, total1Star, total2Star,total3Star,total4Star,total5Star ] = await Promise.all([
+                    this.sequelize.query(`
+                        select count(*) as totalReview from reviews
+                    `),
+                    this.sequelize.query(`
+                        select count(*) as total1Star from reviews 
+                        where star_number = 1
+                    `),
+                    this.sequelize.query(`
+                        select count(*) as total2Star from reviews 
+                        where star_number = 2
+                    `),this.sequelize.query(`
+                    select count(*) as total3Star from reviews 
+                    where star_number = 3
+                    `),
+                        this.sequelize.query(`
+                        select count(*) as total4Star from reviews 
+                        where star_number = 4
+                    `),
+                    this.sequelize.query(`
+                        select count(*) as total5Star from reviews 
+                        where star_number = 5
+                    `)
+
+                ]) 
+            return {
+               totalReview: totalReview[0][0].totalReview,
+               total1Star: total1Star[0][0].total1Star,
+               total2Star: total2Star[0][0].total2Star,
+               total3Star: total3Star[0][0].total3Star,
+               total4Star: total4Star[0][0].total4Star,
+               total5Star: total5Star[0][0].total5Star,
+            }
+            } catch (error) {
+                throw new CustomError(500, "loi server")
+            }
+    }
 }

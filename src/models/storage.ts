@@ -2,6 +2,7 @@ import {
     BelongsToMany,
     Column,
     DataType,
+    HasMany,
     Model,
     Table,
 } from 'sequelize-typescript';
@@ -13,12 +14,15 @@ export interface IStorage extends IBaseModel {
 }
 @Table({
     tableName: 'storages',
+    collate: 'utf8mb4_unicode_ci'
 })
 export class StorageModel extends Model<IStorage> {
     @Column({
         type: DataType.INTEGER,
     })
     memory!: number;
-    @BelongsToMany(() => PhoneModel, () => PhoneVariantModel)
-    phones!: StorageModel[];
+    // @BelongsToMany(() => PhoneModel, () => PhoneVariantModel)
+    // phones!: PhoneModel[];
+    @HasMany(() => PhoneVariantModel)
+    phone_variants!: PhoneVariantModel[]
 }

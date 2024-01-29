@@ -6,8 +6,15 @@ import { ConfigModel } from '../models/config';
 import { ColorModel } from '../models/color';
 import { StorageModel } from '../models/storage';
 import { ImageModel } from '../models/image';
+import { ConnectDatabase } from '../configs/connectDatabase';
+import { PhoneVariantModel } from '../models/phoneVariant';
+import  Sequelize from 'sequelize';
 
 export class PhoneService {
+    private connectDatabase: ConnectDatabase
+    constructor(connectDatabase: ConnectDatabase){
+        this.connectDatabase = connectDatabase;
+    }
     private checkId = async (id: number): Promise<boolean> => {
         try {
             const isCheck = await PhoneModel.findByPk(id);
@@ -26,6 +33,7 @@ export class PhoneService {
                 newPhone: newPhone,
             };
         } catch (error: any) {
+            console.error(error);
             throw new CustomError(500, 'lỗi server');
         }
     };
@@ -55,25 +63,11 @@ export class PhoneService {
                 where: {
                     id: id,
                 },
-                attributes: ['id', 'name', 'desc', 'price'],
+                attributes: ['id','avatar', 'name', 'desc', 'price', "star_number", "inventory_number"],
                 include: [
                     {
-                        model: ColorModel,
-                        attributes: ['id', 'name'],
-                        through: {
-                            attributes: [],
-                        },
-                    },
-                    {
-                        model: StorageModel,
-                        attributes: ['id', 'memory'],
-                        through: {
-                            attributes: [],
-                        },
-                    },
-                    {
                         model: ImageModel,
-                        attributes: ['id', 'link'],
+                        attributes: ['id', 'link'], 
                     },
                     {
                         model: ConfigModel,
@@ -111,4 +105,86 @@ export class PhoneService {
             }
         }
     };
+    public addPhoneToWarehouse = async (
+        id_phone: number,
+        numberPhone: number
+    ): Promise<any> => {
+        try {
+            const response = await PhoneModel.findByPk(id_phone, {
+                raw: true,
+            });
+            const newTotal: number | undefined =
+                response?.inventory_number === 0 || response?.inventory_number
+                    ? response?.inventory_number + numberPhone
+                    : 0;
+
+
+            const phone = await PhoneModel.update(
+                {
+                    inventory_number: newTotal,
+                },
+                {
+                    where: {
+                        id: response?.id,
+                    },
+                }
+            );
+            return {
+                success: true,
+                statusCode: 200,
+                message: 'thêm vào kho thành công',
+            };
+        } catch (error) {
+            throw new CustomError(500, 'lỗi server');
+        }
+    };
+    public listPhonesMassiveDiscount = async(): Promise<any> => { 
+        try {
+            const result = await this.connectDatabase.getSequelize().query(`
+                    select * from phones 
+                    join discounts on discounts.id = phones.discount_id
+                    order by discounts.scale desc
+                    limit 10;
+            `)
+            
+            return {
+                success: true,
+                message: "lấy thành công",
+                statusCode: 200,
+                phones: result[0]
+            }
+        } catch (error) {
+            console.error(error)
+            throw new CustomError(500, "lỗi server");
+        }
+    }
+    public getColorAndStorageById = async (id: number): Promise<any> => {
+        try {
+          const [colorsResult, storagesResult] = await Promise.all([
+            this.connectDatabase.getSequelize().query(`
+              SELECT DISTINCT colors.id,
+              colors.name
+              FROM phone_variants
+              JOIN colors ON phone_variants.color_id = colors.id
+            `),
+            this.connectDatabase.getSequelize().query(`
+              SELECT DISTINCT storages.id,
+              storages.memory
+              FROM phone_variants
+              JOIN storages ON phone_variants.storage_id = storages.id;
+            `)
+          ]);
+          
+          const colors = colorsResult[0];
+          const storages = storagesResult[0];
+      
+          return { colors, storages };
+        } catch (error) {
+           throw new CustomError(500, "lỗi server")
+            
+        }
+      };
+      
+      
+
 }

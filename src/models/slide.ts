@@ -8,6 +8,7 @@ import {
 } from 'sequelize-typescript';
 @Table({
     tableName: 'slide',
+    collate: 'utf8mb4_unicode_ci'
 })
 export class SlideModel extends Model {
     @PrimaryKey

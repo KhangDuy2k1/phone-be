@@ -11,9 +11,11 @@ export class CartController {
         this.validator = validator;
     }
     public getOrderItemCart = async (
+      
         req: Request,
         res: Response
     ): Promise<any> => {
+        console.log("================")
         try {
             const { id } = (req as any).user;
             const { statusCode, ...others } =

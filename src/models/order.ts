@@ -20,6 +20,7 @@ interface IOrder extends IBaseModel {
 }
 @Table({
     tableName: 'orders',
+    collate: 'utf8mb4_unicode_ci'
 })
 export class OrderModel extends BaseModel<IOrder> {
     @ForeignKey(() => UserModel)
@@ -44,7 +45,7 @@ export class OrderModel extends BaseModel<IOrder> {
 
     @Column({
         type: DataType.STRING,
-        defaultValue: 'đã đặt hàng',
+        // defaultValue: 'đã đặt hàng',
     })
     status!: string;
 

@@ -11,7 +11,10 @@ export interface IBaseModel {
     createdAt?: Date;
     updatedAt?: Date;
 }
-@Table
+@Table({
+    collate: 'utf8mb4_unicode_ci'
+}
+)
 export class BaseModel<T extends IBaseModel> extends Model<T> {
     @PrimaryKey
     @AutoIncrement

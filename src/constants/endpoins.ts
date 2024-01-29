@@ -5,6 +5,7 @@ export enum Endpoins {
     sendOtp = '/otp',
     checkOtp = '/verifyOtp',
     changePassword = '/change',
+    changePasswordForget='/change-forget',
     login = '/log',
     logGoogle = '/google',
     logFacebook = '/facebook',
@@ -29,6 +30,9 @@ export enum Endpoins {
     addPhone = '/add',
     allPhone = '/phones',
     phoneDetail = '/phone',
+    addPhoneToWarehouse = '/add-to-store',
+    getMassiveDiscount= '/massive-discount',
+    getColorAndStore = '/color_store/:id',
     //color
     addColor = '/add',
     deleteColor = '/del',
@@ -40,12 +44,16 @@ export enum Endpoins {
     addStorage = '/add',
     deleteStorage = '/del',
     updateStorage = '/update',
+    allStorage = '/stores',
     //phoneVariant
     addPhoneVariant = '/add',
+    getPriceSelect= '/price',
     //orderItem
     addOrderItemtoCart = '/addtocart',
+    updateQuantity = '/update_quantity/:id',
     getOrderItemCart = '/order-item-cart',
     bestSellingPhone = '/best',
+    deleteOrderItem = '/delete/:id',
     //slide
     addSlide = '/add',
     getAllSlides = '/slides',
@@ -53,6 +61,11 @@ export enum Endpoins {
     directOrder = '/direct-order',
     updateInfoOrder = '/update',
     cancleOrder = '/cancle',
+    allOrders = '/orders',
+    detailOrder = '/detail-order',
     //reviews
     addReview = '/add',
+    reviewInfo = '/review-info',
+    //user 
+    getUserLogin = '/get-user-login'
 }
